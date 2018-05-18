@@ -1,1 +1,36 @@
-<iframe src='https://webchat.botframework.com/embed/bot0518?s=8OD3A3a1t1k.cwA.FqY.1x5SyL3dUChTQ46dIMPR0cs1ugvAq8uUAsIguKdy0rY '></iframe>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>アシアルブログ</title>
+<script src="https://webchat.botframework.com/embed/bot0518?s=8OD3A3a1t1k.cwA.FqY.1x5SyL3dUChTQ46dIMPR0cs1ugvAq8uUAsIguKdy0rY"></script>
+<script>
+// UA判定用
+var userAgent = window.navigator.userAgent.toLowerCase();
+var appVersion = window.navigator.appVersion.toLowerCase();
+// ロード・リサイズ時に画面最適化
+$(window).bind("load resize", function(){
+    var width = $(window).width();
+    $("html").css("zoom" , width/1090);
+    if (appVersion.indexOf("msie 9.") != -1) {
+        $("html").css("-ms-transform" , "scale(" + width/1090 + ")").css("-ms-transform-origin" , "0 0");
+        $("body").css("overflow-x" , "hidden");
+    } else if (userAgent.indexOf('gecko') != -1) {
+        $("html").css("-moz-transform" , "scale(" + width/1090 + ")").css("-moz-transform-origin" , "0 0");
+        $("body").css("overflow-x" , "hidden");
+    }
+});
+</script>
+<style>
+/* IE用viewport */
+@-ms-viewport {width: 1090px;}
+/* common */
+html,body {margin:0;padding:0}
+</style>
+</head>
+<body>
+    <img src="blog.jpg" width="1090">
+</body>
+</html>
