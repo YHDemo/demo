@@ -1,0 +1,187 @@
+@charset "UTF-8";
+/* CSS Document */
+
+/*
+
+
+*/
+/* リセットCSS*/
+html,body,div,span,applet,object,iframe,strong,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,legend,caption,tbody,tfoot,thead,table,label,tr,th,td{margin:0;padding:0;border:0;outline:0;font:inherit;font-size:100%;vertical-align:baseline}body{line-height:1}ol,ul{list-style:none}table{border-collapse:collapse;border-spacing:0}
+
+
+#wrap{
+	background-color:#eee;
+	font-size:14px;
+	line-height:19px;
+}
+
+#main{
+	width:880px;
+	margin:20px auto;
+}
+h1{
+	color:#064454;
+	font-size:22px;
+	font-weight:bold;
+	margin:;
+	text-align:center;
+}
+.fr{
+	float:right;
+	color: #ffffff;
+	padding: 10px 20px;
+	background: -moz-linear-gradient(
+		top,
+		#943527 0%,
+		#841414);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#943527),
+		to(#841414));
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 1px solid #570202;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,1);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,1);
+	box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,1);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0.4),
+		0px 1px 0px rgba(255,255,255,0.3);
+	margin-bottom:15px;
+}
+h2{
+	font-size:18px;
+	font-weight:bold;
+	text-align:right;
+	width:160px;
+	color: #ffffff;
+	margin:10px 0 20px -100px;
+	padding: 8px 20px;
+	background: -moz-linear-gradient(
+		top,
+		#555959 0%,
+		#545959 18%,
+		#2c3131 50%,
+		#272b2b 91%,
+		#2a2e2e);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#555959),
+		color-stop(0.18, #545959),
+		color-stop(0.50, #2c3131),
+		color-stop(0.91, #272b2b),
+		to(#2a2e2e));
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #000000;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 5px rgba(209,209,209,0.6);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 5px rgba(209,209,209,0.6);
+	box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 5px rgba(209,209,209,0.6);
+	text-shadow:
+		0px -1px 3px rgba(255,255,255,0),
+		0px 1px 0px rgba(255,255,255,0);
+}
+
+.sec{
+	clear:both;
+	border:1px dashed #999;
+	margin:50px auto 50px;
+	padding:10px 40px 40px;
+	width:798px;
+	vertical-align:middle;
+	background-color:#fff;
+	overflow:hidden;
+}
+
+/*サンプル2*/
+.hoge2A,.hoge2B,.hoge2C,.hoge2D{
+	width:500px;
+	height:16px;
+	padding:10px;
+	margin:auto;
+	line-height:16px;
+	border:1px solid #888;
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	color:#252525;
+	cursor:pointer;
+	background-color:#FFF;
+	text-align:center;
+}
+
+/*サンプル3*/
+.hoge3A,.hoge3B{
+	float:left;
+	height:16px;
+	padding:10px;
+	line-height:16px;
+	border:1px solid #888;
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	color:#252525;
+	cursor:pointer;
+	background-color:#FFF;
+	text-align:center;
+	width:470px;
+}
+.pink{
+	float:right;
+	width:250px;
+	height:100px;
+	padding:10px;
+	border:#888 solid 1px;
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	background:#FC9;
+	display:table-cell;
+	vertical-align:middle;
+	color:#FFF;
+	line-height:100px;
+	text-align:center;
+}
+.hogehoge{
+	float:right;
+	width:250px;
+	height:100px;
+	padding:10px;
+	border:#888 solid 1px;
+	border-radius:5px;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+	background:#4798bd;
+	display:table-cell;
+	vertical-align:middle;
+}
+/*サンプル4*/
+table{
+	margin:auto;
+	text-align:center;
+}
+table th{
+	background-color:#252525;
+	color:#fff;
+}
+table th,table td{
+	border:1px solid #000;
+	padding:5px;
+}
+.odd{
+	background-color:#ddd;
+}
