@@ -1,0 +1,502 @@
+var chatviewDiv = null;
+var chatviewDivFooter = null;
+var jp_chatplus_app_accessTime;
+var jpChatplusOnComplete = false;
+var referer = (location.href != parent.location.href) ? parent.document.referrer : document.referrer,
+    requestUrl = location.protocol + '//' + location.host + location.pathname + location.search,
+    userAgent = navigator.userAgent.toLowerCase(),
+    __cp_c = document.__cp_c;
+__cp_d = document.__cp_d;
+__cp_t = document.__cp_t;
+__cp_p = document.__cp_p;
+var __cp_posy;
+if (__cp_p && typeof __cp_p == "object") {
+    __cp_p = JSON.stringify(__cp_p);
+}
+__cp_f = document.__cp_f;
+if (__cp_f && typeof __cp_f == "object") {
+    __cp_f = JSON.stringify(__cp_f);
+}
+
+addScript(document.getElementsByTagName('body').item(0), __cp_d + '/assets/js/app/chatplusscript.js?v=' + parseInt(new Date().getTime() / (900*1000)));
+
+window.onbeforeunload = function() {
+    __cp_tracker.sendServer(true);
+}
+browser = {
+    Version: (userAgent.match(/.+(?:rv|it|ra|ie)[\/: ]([\d.]+)/) || [])[1],
+    Safari: /webkit/.test(userAgent),
+    Opera: /opera/.test(userAgent),
+    IE: /msie/.test(userAgent) && !/opera/.test(userAgent),
+    Mozilla: /mozilla/.test(userAgent) && !/(compatible|webkit)/.test(userAgent),
+    Chrome: /chrome/.test(userAgent)
+};
+
+Tracker = function() {
+    this.accessTime = (new Date()).getTime();
+    this.xmlHttp = null;
+    return this;
+};
+
+Tracker.prototype = {
+    accessTime: null,
+    xmlHttp: null,
+    getTitle: function() {
+        if (document.getElementById('title')) {
+            var elmT = document.getElementsByTagName('title')[0];
+            return (browser.IE) ? elmT.innerHTML : elmT.firstChild.nodeValue;
+        } else {
+            return document.title;
+        }
+    }, //チャット表示
+    displayChat: function() {
+
+        //cookie取得
+        var cdata = document.cookie;
+        var cookies = cdata.split(";");
+        var cookieAssoc = [];
+        for(var i=0; i<cookies.length; i++){
+            cookies[i] = cookies[i].replace(/^ +| +$/,'');
+            var tmp = cookies[i].split("=");
+            cookieAssoc[tmp[0]] = tmp[1];
+        }
+        //cookie書き込み処理
+        var r = "";
+        if (!this.getCookie("jp_chatplus_vtoken")) {
+            //token発行
+            var l = 20;
+            var c = "abcdefghijklmnopqrstuvwxyz0123456789";
+            var cl = c.length;
+            for(var i=0; i<l; i++){
+                r += c[Math.floor(Math.random()*cl)];
+            }
+            var contracts = __cp_c.split("_");
+            r += contracts[0];
+            this.setCookie("jp_chatplus_vtoken", r);
+        }else {
+            r = this.getCookie("jp_chatplus_vtoken");
+        }
+
+        var t = "c";
+        if (__cp_t) t = __cp_t;
+        var _ua = (function(u) {
+            return {
+                Tablet: (u.indexOf("windows") != -1 && u.indexOf("touch") != -1 && u.indexOf("tablet pc") == -1) ||
+                    u.indexOf("ipad") != -1 ||
+                    (u.indexOf("android") != -1 && u.indexOf("mobile") == -1) ||
+                    (u.indexOf("firefox") != -1 && u.indexOf("tablet") != -1) ||
+                    u.indexOf("kindle") != -1 ||
+                    u.indexOf("silk") != -1 ||
+                    u.indexOf("playbook") != -1,
+                Mobile: (u.indexOf("windows") != -1 && u.indexOf("phone") != -1) ||
+                    u.indexOf("iphone") != -1 ||
+                    u.indexOf("ipod") != -1 ||
+                    (u.indexOf("android") != -1 && u.indexOf("mobile") != -1) ||
+                    (u.indexOf("firefox") != -1 && u.indexOf("mobile") != -1) ||
+                    u.indexOf("blackberry") != -1
+            }
+        })(window.navigator.userAgent.toLowerCase());
+        var url = __cp_d + '/chat/visitor/';
+        url += __cp_c + "/" + t;
+        url += "?pt=" + encodeURIComponent(this.getTitle());
+        url += "&pu=" + encodeURIComponent(location.protocol + '//' + location.host + location.pathname + location.search);
+        url += '&pr=' + encodeURIComponent(document.referrer);
+        url += '&c=' + r;
+        if (__cp_p) {
+            url += "&pp=" + encodeURIComponent(__cp_p);
+        }
+        if (__cp_f) {
+            url += "&pf=" + encodeURIComponent(__cp_f);
+        }
+        if (!navigator.cookieEnabled) {
+            url += "&fp=" + new Fingerprint({
+                canvas: true,
+                screen_resolution: true
+            }).get();
+        }
+        //文字コード取得
+        var charset = "UTF-8";
+        if (document.all) { // IE用
+            charset = document.charset;
+        } else { // IE以外
+            charset = document.characterSet;
+        }
+        if (charset != "UTF-8" && charset != "utf-8") url += "&pc=" + charset;
+
+        var params = {
+            accessTime: this.accessTime
+        }
+
+        // createScriptBefore( __cp_d + '/assets/js/require.js', 'text/javascript');
+        createScriptAfterRequire("https://appimg.chatplus.jp/app/s/lib/jqueryc.min.js","jQueryPlus");
+        createScriptAfterRequire("https://appimg.chatplus.jp/app/s/lib/riot/2.6.4/riot%2Bcompiler.min.js","riot");
+        createScriptAfterRequire("https://appimg.chatplus.jp/app/s/lib/underscore/underscorec.min.js","underscore");
+        createScriptAfterRequire("https://appimg.chatplus.jp/app/s/lib/moment.min.js","moment");
+
+        createIframe({
+            'id': 'jp.chatplus.app_chat_frame',
+            'src': url + '#' + JSON.stringify({accessTime: this.accessTime}),
+            'style': 'display:none',
+            'frameborder': 'no',
+        });
+
+        jp_chatplus_app_accessTime=this.accessTime;
+    }
+    ,nl2br:function(str) {
+        return str.replace(/(\r\n|\r|\n)/g, "<br />");
+    },
+    readyLead:function() {
+        createScriptAfter(__cp_d + '/assets/js/app/lead.js');
+        createStyle(__cp_d + '/assets/css/lead.css');
+    },
+    displayLead:function() {
+        if (! window.chatplus || ! window.chatplus.displayLead) {this.readyLead();}
+        window.chatplus.displayLead();
+    }
+    , //トラッキング
+    sendServer:function(dom) {
+
+        var jt = Math.floor(jt/1000);
+    var url = __cp_d+'/chat/track/';
+    url += __cp_c+"/c";
+    url += "?pt="+encodeURIComponent(this.getTitle());
+    url += "&pu="+encodeURIComponent(location.protocol+'//'+location.host+location.pathname+location.search);
+        url += '&jt='+jt;
+        url += '&s='+Math.floor(Math.random()*100);
+
+        if(dom){
+            var itemElm=document.getElementById('item');
+            var bodyElm=(itemElm)?itemElm:document.getElementsByTagName('body').item(0);
+            var imgElm=document.createElement('img');
+            imgElm.setAttribute('src',url);
+            bodyElm.appendChild(imgElm);
+        }else{
+            document.write('<img src="'+url+'" />');
+        }
+        return this;
+    },
+    ajax: function( url, data, func ){
+        if (window.XMLHttpRequest){
+            this.xmlHttp = new XMLHttpRequest();
+        }else{
+            if (window.ActiveXObject){
+                this.xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }else{
+                this.xmlHttp = null;
+            }
+        }
+        var self = this;
+        this.xmlHttp.onreadystatechange = function() {
+            var READYSTATE_COMPLETED = 4;
+            var HTTP_STATUS_OK = 200;
+            if( this.readyState == READYSTATE_COMPLETED
+                && this.status == HTTP_STATUS_OK )
+            {
+                func.call(self, this.responseText);
+            }
+        }
+        this.xmlHttp.open("POST", url);
+        // サーバに対して解析方法を指定する
+        this.xmlHttp.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        // データをリクエスト ボディに含めて送信する
+        this.xmlHttp.send( this.encodeHTMLForm( data ) );
+    },
+    encodeHTMLForm: function(data) {
+        var params = [];
+        for( var name in data ) {
+            var value = data[ name ];
+            var param = encodeURIComponent( name ) + '=' + encodeURIComponent( value );
+            params.push( param );
+        }
+        return params.join( '&' ).replace( /%20/g, '+' );
+    },
+    setCookie:function(c_name,value){
+            // pathの指定
+            path = "/";
+            // 有効期限の日付
+            var extime = new Date().getTime();
+            var cltime = new Date(extime + (1000 * 3600 * 24 * 365 * 20)); //20年
+            var exdate = cltime.toUTCString();
+            // クッキーに保存する文字列を生成
+            var s="";
+            s += c_name+"="+ escape(value);// 値はエンコードしておく
+            s += "; path="+ path;
+            s += "; expires=" +exdate+"; ";
+            // クッキーに保存
+            document.cookie=s;
+    },
+    getCookie:function(c_name){
+            var st="";
+            var ed="";
+            if(document.cookie.length>0){
+                // クッキーの値を取り出す
+                    st=document.cookie.indexOf(c_name + "=");
+                    if(st!=-1){
+                st=st+c_name.length+1;
+                ed=document.cookie.indexOf(";",st);
+                if(ed==-1) ed=document.cookie.length;
+                // 値をデコードして返す
+                return unescape(document.cookie.substring(st,ed));
+            }
+        }
+        return "";
+    },
+    removeCookie:function(c_name) {
+            // pathの指定
+            var path = "/";
+            // 有効期限の日付
+            var exdate = "Thu, 01 Jan 1970 00:00:00 GMT";
+            // クッキーに保存する文字列を生成
+            var s="";
+            s += c_name+"=";// 値はエンコードしておく
+            s += "; path="+ path;
+            s += "; expires=" +exdate+"; ";
+            // クッキーに保存
+            document.cookie=s;
+        }
+}
+var __cp_tracker  = new Tracker();
+//デザイン取得
+var __cp_design = null;
+var __cp_leadTime = 0;
+var __cp_vi = null;
+window.addEventListener("message", function(event){
+
+    chatviewDiv = document.getElementById('chatplusview');
+    chatviewDivFooter = document.getElementById('chatplusfooter');
+    if (event.data.t=="update-user-callback") {
+        if(_chatplusscript_updateUser_callback)	{
+            _chatplusscript_updateUser_callback.call(this, event.data.response );
+            _chatplusscript_updateUser_callback = null;
+        }
+    }else if (event.data.t=="get-lead-one-callback") {
+        if (_chatplusscript_getLeadOne_callback) {
+            _chatplusscript_getLeadOne_callback.call(this, event.data.response);
+            _chatplusscript_getLeadOne_callback = null;
+        }
+    } else if (event.data.t === 'get-visitor-option-callback') {
+        window.chatplus.option = event.data.response;
+    } else if (event.data.t=="va") {
+        __cp_tracker.ajax( __cp_d+'/api/chat/design/'+__cp_c
+            , {}
+            , function(result){
+                result = JSON.parse(result);
+                if (result.reject)
+                    return;
+                var obj = {
+                      configKey:event.data.data
+                    , configChat:result.data.chat_config
+                    , style:result.data.style
+                    , version:result.data.version
+                };
+                loadStartChat(obj);
+
+                //tokenが異なっていたら、first party cookieを上書き
+                if (event.data.ctoken && __cp_tracker.getCookie("jp_chatplus_vtoken")!=event.data.ctoken) {
+                    __cp_tracker.setCookie("jp_chatplus_vtoken", event.data.ctoken);
+                }
+
+                var a = event.data.via;
+                __cp_vi = a;
+                __cp_tracker.ajax(__cp_d+"/api/lead/startup", {key:__cp_c,page:encodeURIComponent(location.protocol+'//'+location.host+location.pathname+location.search),a:a,p:__cp_p}, function(result){
+                    var result = JSON.parse(result);
+                    if(result.data.leavepage){
+                      (localStorage)?localStorage.setItem('lead_on_leavepage',result.data.leavepage):__cp_tracker.setCookie('lead_on_leavepage',result.data.leavepage);
+                    }else{
+                      (localStorage)?localStorage.setItem('lead_on_leavepage', null):__cp_tracker.setCookie('lead_on_leavepage', null);
+                    }
+                    if (result.result != 1) {return;}
+                    if (! result.data.display) {return;}
+                    var time = result.data.time;
+                    var on_leavepage = result.data.leavepage;
+                    
+
+                    __cp_tracker.ajax(__cp_d+"/api/lead/config", {key:__cp_c}, function(result){
+                        var result = JSON.parse(result);
+                        if (result.result!=1) {return;}
+                        if (result.data.startup.hiddenType==1 && __cp_tracker.getCookie("ever"+__cp_c)=="1") {return;}
+                        if (result.data.startup.hiddenType==2 && __cp_tracker.getCookie("display"+__cp_c)=="1") {return;}
+                        if (result.data.startup.hiddenType==4 && __cp_tracker.getCookie("close"+__cp_c)=="1") {return;}
+                        __cp_design = result.data.appearance;
+                        __cp_design["checkbox"] = result.data.startup.hiddenType==1? true:false;
+                        if(on_leavepage){
+                          (localStorage)?localStorage.setItem('hiddenType',result.data.startup.hiddenType):__cp_tracker.setCookie('hiddenType',result.data.startup.hiddenType);
+                        }
+
+                        if (time != 0) {
+                            __cp_tracker.readyLead();
+                            var intervalID = window.setInterval(function(tracker){
+                                var jt = (new Date()).getTime()-tracker.accessTime;
+                                jt = Math.floor(jt/1000);
+                                //一度でもリードを表示させた場合はlead_formが作成されている
+                                //ページ離脱ルールが起動しvisitor-clientですでに作られている可能性がある
+                                if (jt>=time && jQueryPlus('form[name="lead_form"]').length == 0) {
+                                    //console.log('time');
+                                    __cp_tracker.displayLead();
+                                    //表示したことをcookieに保存
+                                    __cp_tracker.setCookie("display"+__cp_c, "1");
+                                    clearInterval(intervalID);
+                                }
+                            }, 200, __cp_tracker);
+                        }
+                    });
+                });
+            })
+    }
+    else if (event.data.t=="up") {
+        if (event.data.result=="error") {
+            alert("ファイルサイズが大きいまたは、ネットワークの状態が悪いため、アップロードできませんでした。");
+        }
+    }
+},false);
+(function(a,c,b){c[a]=b()})("Fingerprint",this,function(){var a=function(b){var c,d;c=Array.prototype.forEach;d=Array.prototype.map;this.each=function(k,j,h){if(k===null){return}if(c&&k.forEach===c){k.forEach(j,h)}else{if(k.length===+k.length){for(var g=0,e=k.length;g<e;g++){if(j.call(h,k[g],g,k)==={}){return}}}else{for(var f in k){if(k.hasOwnProperty(f)){if(j.call(h,k[f],f,k)==={}){return}}}}}};this.map=function(h,g,f){var e=[];if(h==null){return e}if(d&&h.map===d){return h.map(g,f)}this.each(h,function(k,i,j){e[e.length]=g.call(f,k,i,j)});return e};if(typeof b=="object"){this.hasher=b.hasher;this.screen_resolution=b.screen_resolution;this.screen_orientation=b.screen_orientation;this.canvas=b.canvas;this.ie_activex=b.ie_activex}else{if(typeof b=="function"){this.hasher=b}}};a.prototype={get:function(){var c=[];c.push(navigator.userAgent);c.push(navigator.language);c.push(screen.colorDepth);if(this.screen_resolution){var b=this.getScreenResolution();if(typeof b!=="undefined"){c.push(b.join("x"))}}c.push(new Date().getTimezoneOffset());c.push(this.hasSessionStorage());c.push(this.hasLocalStorage());c.push(!!window.indexedDB);if(document.body){c.push(typeof(document.body.addBehavior))}else{c.push(typeof undefined)}c.push(typeof(window.openDatabase));c.push(navigator.cpuClass);c.push(navigator.platform);c.push(navigator.doNotTrack);c.push(this.getPluginsString());if(this.canvas&&this.isCanvasSupported()){c.push(this.getCanvasFingerprint())}if(this.hasher){return this.hasher(c.join("###"),31)}else{return this.murmurhash3_32_gc(c.join("###"),31)}},murmurhash3_32_gc:function(j,f){var k,l,h,b,e,c,g,d;k=j.length&3;l=j.length-k;h=f;e=3432918353;c=461845907;d=0;while(d<l){g=((j.charCodeAt(d)&255))|((j.charCodeAt(++d)&255)<<8)|((j.charCodeAt(++d)&255)<<16)|((j.charCodeAt(++d)&255)<<24);++d;g=((((g&65535)*e)+((((g>>>16)*e)&65535)<<16)))&4294967295;g=(g<<15)|(g>>>17);g=((((g&65535)*c)+((((g>>>16)*c)&65535)<<16)))&4294967295;h^=g;h=(h<<13)|(h>>>19);b=((((h&65535)*5)+((((h>>>16)*5)&65535)<<16)))&4294967295;h=(((b&65535)+27492)+((((b>>>16)+58964)&65535)<<16))}g=0;switch(k){case 3:g^=(j.charCodeAt(d+2)&255)<<16;case 2:g^=(j.charCodeAt(d+1)&255)<<8;case 1:g^=(j.charCodeAt(d)&255);g=(((g&65535)*e)+((((g>>>16)*e)&65535)<<16))&4294967295;g=(g<<15)|(g>>>17);g=(((g&65535)*c)+((((g>>>16)*c)&65535)<<16))&4294967295;h^=g}h^=j.length;h^=h>>>16;h=(((h&65535)*2246822507)+((((h>>>16)*2246822507)&65535)<<16))&4294967295;h^=h>>>13;h=((((h&65535)*3266489909)+((((h>>>16)*3266489909)&65535)<<16)))&4294967295;h^=h>>>16;return h>>>0},hasLocalStorage:function(){try{return !!window.localStorage}catch(b){return true}},hasSessionStorage:function(){try{return !!window.sessionStorage}catch(b){return true}},isCanvasSupported:function(){var b=document.createElement("canvas");return !!(b.getContext&&b.getContext("2d"))},isIE:function(){if(navigator.appName==="Microsoft Internet Explorer"){return true}else{if(navigator.appName==="Netscape"&&/Trident/.test(navigator.userAgent)){return true}}return false},getPluginsString:function(){if(this.isIE()&&this.ie_activex){return this.getIEPluginsString()}else{return this.getRegularPluginsString()}},getRegularPluginsString:function(){return this.map(navigator.plugins,function(c){var b=this.map(c,function(d){return[d.type,d.suffixes].join("~")}).join(",");return[c.name,c.description,b].join("::")},this).join(";")},getIEPluginsString:function(){if(window.ActiveXObject){var b=["ShockwaveFlash.ShockwaveFlash","AcroPDF.PDF","PDF.PdfCtrl","QuickTime.QuickTime","rmocx.RealPlayer G2 Control","rmocx.RealPlayer G2 Control.1","RealPlayer.RealPlayer(tm) ActiveX Control (32-bit)","RealVideo.RealVideo(tm) ActiveX Control (32-bit)","RealPlayer","SWCtl.SWCtl","WMPlayer.OCX","AgControl.AgControl","Skype.Detection"];return this.map(b,function(c){try{new ActiveXObject(c);return c}catch(d){return null}}).join(";")}else{return""}},getScreenResolution:function(){var b;if(this.screen_orientation){b=(screen.height>screen.width)?[screen.height,screen.width]:[screen.width,screen.height]}else{b=[screen.height,screen.width]}return b},getCanvasFingerprint:function(){var d=document.createElement("canvas");var c=d.getContext("2d");var b="http://valve.github.io";c.textBaseline="top";c.font="14px 'Arial'";c.textBaseline="alphabetic";c.fillStyle="#f60";c.fillRect(125,1,62,20);c.fillStyle="#069";c.fillText(b,2,15);c.fillStyle="rgba(102, 204, 0, 0.7)";c.fillText(b,4,17);return d.toDataURL()}};return a});
+
+__cp_tracker.displayChat();
+
+function loadStartChat(data) {
+
+        // createScriptAfter( __cp_d + '/assets/js/require_config.js', 'text/javascript');
+
+        var bodyElm=document.getElementsByTagName('body').item(0);
+        createAudioTag ("message", bodyElm, 'audioTypeMessage');
+        createAudioTag ("start", bodyElm, 'audioTypeStart');
+//        createAudioTag ("alert", bodyElm, 'audioTypeAlert');
+//        createAudioTag ("close", bodyElm, 'audioTypeClose');
+//        createAudioTag ("wait", bodyElm, 'audioTypeWait');
+
+        createStyle('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+
+        createStyle( __cp_d + '/assets/css/chat_common.css?v='+data.version);
+        createStyle( __cp_d + '/assets/css/chat.css?v='+data.version);
+
+            var _ua = (function(u) {
+                return {
+                    Tablet: (u.indexOf("windows") != -1 && u.indexOf("touch") != -1 && u.indexOf("tablet pc") == -1) ||
+                        u.indexOf("ipad") != -1 ||
+                        (u.indexOf("android") != -1 && u.indexOf("mobile") == -1) ||
+                        (u.indexOf("firefox") != -1 && u.indexOf("tablet") != -1) ||
+                        u.indexOf("kindle") != -1 ||
+                        u.indexOf("silk") != -1 ||
+                        u.indexOf("playbook") != -1,
+                    Mobile: (u.indexOf("windows") != -1 && u.indexOf("phone") != -1) ||
+                        u.indexOf("iphone") != -1 ||
+                        u.indexOf("ipod") != -1 ||
+                        (u.indexOf("android") != -1 && u.indexOf("mobile") != -1) ||
+                        (u.indexOf("firefox") != -1 && u.indexOf("mobile") != -1) ||
+                        u.indexOf("blackberry") != -1
+                }
+            })(window.navigator.userAgent.toLowerCase());
+        if (_ua.Mobile || _ua.Tablet) {
+            createStyle( __cp_d + '/assets/css/chat_sp.css?v='+data.version);
+        }
+
+        var headElm=document.getElementsByTagName('head')[0];
+        var styleIndex=document.createElement('style');
+        styleIndex.innerHTML = data.style;
+        headElm.appendChild(styleIndex);
+
+        var chatTag = document.createElement('chat');
+        bodyElm.appendChild(chatTag);
+
+        // set chat_config <script>
+        var chatConfig=document.createElement('script');
+        chatConfig.id = "chat_config";
+        chatConfig.type = "application/json";
+            chatConfig.innerText = JSON.stringify(data.configChat);
+        bodyElm.appendChild(chatConfig);
+
+        var scriptConfig=document.createElement('script');
+        scriptConfig.innerHTML = data.configKey;
+        bodyElm.appendChild(scriptConfig);
+
+
+        addScript(bodyElm, __cp_d + '/assets/js/riot-tags/output.tag.js?v='+data.version, {'type': 'riot/tag'});
+        addScript(bodyElm, __cp_d + '/assets/js/riot-tags/chat.tag.js?v='+data.version, {'type': 'riot/tag'});
+        addScript(bodyElm, __cp_d + '/assets/js/app/visitor-client.js?v='+data.version);
+
+        if (typeof jQueryPlus == "undefined") {
+            addScript(bodyElm, 'https://appimg.chatplus.jp/app/s/lib/jqueryc.min.js');
+        }
+
+        createScriptAfterRequire("https://appimg.chatplus.jp/app/s/lib/jquery-uploadc.js","fileupload");
+
+        if (data.configChat.externals && data.configChat.externals.pardot && data.configChat.externals.pardot.enabled) {
+            jQueryPlus.getScript(__cp_d + '/assets/js/app/external/pardot.js')
+            .then(function() {
+                if (data.configChat.externals.pardot.landing_url) {
+                    window.chatplus.create_pardot_landing(data.configChat);
+                }
+                if (data.configChat.externals.pardot.form_url) {
+                    window.chatplus.create_pardot_form(data.configChat);
+                }
+            });
+        }
+
+        jpChatplusOnComplete = true;
+}
+
+function createScriptAfter(sr, type) {
+    var ca = document.createElement('script')
+    ,ss = document.getElementsByTagName('script')[0];
+    if (type) {ca.type = type;}
+    ca.src = sr;
+    ss.parentNode.insertBefore(ca, ss.nextSibling);
+}
+
+function createScriptBefore(sr, type) {
+    var ca = document.createElement('script')
+    ,ss = document.getElementsByTagName('script')[0];
+    if (type) {ca.type = type;}
+    ca.src = sr;
+    ss.parentNode.insertBefore(ca, ss);
+}
+
+function createStyle(sr) {
+    var ca = document.createElement('link')
+    ,ss = document.getElementsByTagName('head')[0];
+    ca.setAttribute('rel','stylesheet');
+    ca.href = sr;
+    ss.appendChild(ca);
+}
+
+function createStyleAttribute(sr, integrity) {
+    var ca = document.createElement('link')
+    ,ss = document.getElementsByTagName('head')[0];
+    ca.setAttribute('rel','stylesheet');
+    ca.setAttribute('integrity', integrity);
+    ca.setAttribute('crossorigin', 'anonymous');
+    ca.href = sr;
+    ss.appendChild(ca);
+}
+function createAudioTag (data, bodyElm, id) {
+    var audioTag=document.createElement('audio');
+    audioTag.id = id;
+    audioTag.innerHTML ='<source src="https://appimg.chatplus.jp/app/s/sound/'+data+'.mp3" type="audio/mp3">';
+    bodyElm.appendChild(audioTag);
+}
+
+function createScriptAfterRequire(sr, requiremodule) {
+    var ca = document.createElement('script');
+    var bodyElm=document.getElementsByTagName('body').item(0);
+    ca.setAttribute('charset','utf-8');
+    ca.setAttribute('async', '');
+    ca.setAttribute('data-requirecontext', '_');
+    ca.setAttribute('data-requiremodule', requiremodule);
+    ca.type = "text/javascript";
+    ca.src = sr;
+    bodyElm.appendChild(ca);
+}
+
+function addScript(bodyElm, src, attr) {
+    var e = document.createElement('script');
+    e.src = src;
+    if (attr) {for (var i in attr) {e.setAttribute(i, attr[i]);}}
+    bodyElm.appendChild(e);
+};
+
+function createIframe(attr) {
+    var bodyElm = document.getElementsByTagName('body').item(0);
+    var e = document.createElement('iframe');
+    if (attr) {for (var i in attr) {e.setAttribute(i, attr[i]);}}
+    bodyElm.appendChild(e);
+};

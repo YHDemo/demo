@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!-- saved from url=(0342)http://app.chatplus.jp/chat/visitor/daae53b5_1/c?pt=%5B%E3%83%87%E3%83%A2%E3%82%B5%E3%82%A4%E3%83%88%5D%20%E6%A0%AA%E5%BC%8F%E4%BC%9A%E7%A4%BE%E3%83%87%E3%83%A2%E3%82%B5%E3%82%A4%E3%83%88&pu=http%3A%2F%2Fwww.chatsupporttool.jp%2Fdemo%2Fcompany%2Findex.php%3Fcid%3Ddaae53b5_1&pr=&c=ue6h7w8ce3tk4nmcpefic7c63436#{%22accessTime%22:1528417448949} -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>chatplus</title>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1">
+<link rel="stylesheet" href="./font-awesome.min.css">
+<script charset="utf-8" type="text/javascript" src="./jqueryc.min.js.ダウンロード"></script>
+<script charset="utf-8" type="text/javascript" src="./riot+compiler.min.js.ダウンロード"></script><style type="text/css"></style>
+<script charset="utf-8" type="text/javascript" src="./moment.min.js.ダウンロード"></script>
+<script charset="utf-8" type="text/javascript" src="./underscorec.min.js.ダウンロード"></script>
+<link rel="stylesheet" href="./common.css">
+<link rel="stylesheet" href="./chat_common.css">
+<link rel="stylesheet" href="./chat.css">
+<style>
+</style>
+</head>
+<body>
+<script id="p_domain">var parser = document.createElement('a');parser.href="http://www.chatsupporttool.jp/demo/company/index.php?cid=daae53b5_1";</script>
+<script id="parser">var p_domain= parser.protocol+"//"+parser.hostname;if(parser.port) { p_domain= parser.protocol+"//"+parser.hostname+":"+parser.port; }</script>
+<script id="post_message"> window.self.onload = function() { window.parent.postMessage({"t":"va", "data":'var access_key="daae53b5";var site_id="1";var va="3";', "ctoken":"ue6h7w8ce3tk4nmcpefic7c63436","via":"3"},p_domain); }</script>
+<script>
+window.addEventListener("message", function(event){
+	switch(event.data.type) {
+		case "edit-lead":
+event.data.params["accessToken"] = event.data.token;
+event.data.params["siteId"] = event.data.siteId;
+event.data.params["token"] = event.data.vtoken;
+jQueryPlus.ajax({
+type: "POST",
+url: "/api/v1/update_user",
+data: event.data.params}).done(function (data, status, xhr) {
+	window.parent.postMessage({"t":"update-user-callback", "response":data},p_domain);
+}).fail(function (xhr, status, error) {
+	window.parent.postMessage({"t":"update-user-callback", "response":{result:-1,code:xhr.status}},p_domain);
+});
+		break;
+		case "get-lead-one":
+jQueryPlus.ajax({
+type: "POST",
+url: "/api/v1/get_lead_one",
+data: {accessToken:event.data.token, siteId:event.data.siteId, token:event.data.vtoken}}).done(function (data, status, xhr) {
+	window.parent.postMessage({"t":"get-lead-one-callback", "response":data},p_domain);
+}).fail(function (xhr, status, error) {
+	window.parent.postMessage({"t":"get-lead-one-callback", "response":{result:-1,code:xhr.status}},p_domain);
+});
+		break;
+		case "get-visitor-option": {
+			var cookie_key_option = 'chatplus_visitor_option' + '_' + event.data.access_key;
+			var option = {};
+
+			if ((new RegExp("(?:^|;\\s*)" + escape(cookie_key_option).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(window.document.cookie)) {
+				var option_s = unescape(window.document.cookie.replace(new RegExp("(?:^|.*;\\s*)" + escape(cookie_key_option).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
+				var option = JSON.parse(option_s);
+			}
+
+			window.parent.postMessage({
+				't': 'get-visitor-option-callback',
+				'response': option
+			}, p_domain);
+			break;
+		}
+	}
+});
+</script>
+
+
+</body></html>
